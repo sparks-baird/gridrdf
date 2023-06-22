@@ -1138,5 +1138,3 @@ if __name__ == '__main__':
         else:
             pred_k = nn_bulk_modulus_matrix_add(data, simi_matrix=['extended_rdf_emd', 'composition_emd'])
             pred_k.to_csv(output_file + 'pred_k.csv')
-
-
