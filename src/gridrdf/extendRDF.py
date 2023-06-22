@@ -1,4 +1,4 @@
-'''
+"""
 Generate Radial Distribution Functions (including GRID) from a pymatgen structure.
 
 Various functions to compute pairwise atomic distances and bin
@@ -10,7 +10,7 @@ so the input_file should contain a single structure
 Batch calculation of the whole dataset, i.e. multiple input structures is done in the
 __name__ == '__main__' part in data_explore.py
 
-'''
+"""
 
 import sys
 import numpy as np
@@ -25,7 +25,7 @@ from scipy.sparse import coo_matrix
 try:
     from pymatgen import Structure
 except ImportError:
-    from pymatgen.core.structure import Structure   
+    from pymatgen.core.structure import Structure
 try:
     from pymatgen import Lattice
 except ImportError:
@@ -36,20 +36,20 @@ from pyemd import emd
 import warnings
 
 def get_raw_rdf(structure, prim_cell_list, max_dist=10):
-    '''
+    """
     Get pair distance in the structure at a given cutoff.
-    
-    This is the raw pair distance values before binning.    
-    Currently the atomic species information is dropped.  
+
+    This is the raw pair distance values before binning.
+    Currently the atomic species information is dropped.
 
     Args:
         structure: pymatgen structure, typically a supercell
         max_dist: cutoff of the atomic pair distance
-        prim_cell_list: index of the atoms of the selected primitive cell 
+        prim_cell_list: index of the atoms of the selected primitive cell
             (See NB1 in the header of this file)
     Return:
-        A sorted 1d list of atomic pair distance 
-    '''
+        A sorted 1d list of atomic pair distance
+    """
     raw_rdf = []
     for site in prim_cell_list:
         for pair_site in structure.get_neighbors(site=structure[site], r=max_dist):
@@ -451,11 +451,11 @@ def calculate_rdf(structure,
 
 
 def get_rdf_and_atoms(structure, prim_cell_list, max_dist=10):
-    '''
-    Get pair distance in the supercell, and the element symbols of the atom pair. 
-    
-    One atoms must be in the selected primtive cell.  
-    The output dictionary should be like this:  
+    """
+    Get pair distance in the supercell, and the element symbols of the atom pair.
+
+    One atoms must be in the selected primtive cell.
+    The output dictionary should be like this:
     {0: [[1.564, 'Si', 'O'],  # where '0' is the atom number
         [1.592, 'Si', 'O'],
         [1.735, 'Si', 'O'],
@@ -471,23 +471,32 @@ def get_rdf_and_atoms(structure, prim_cell_list, max_dist=10):
             (See NB1 in the header of this file)
     Return:
         A sortted list of atomic pair distance, with atom species
+<<<<<<< Updated upstream
     '''
 
     warnings.warn('`get_rdf_and_atoms` will be deprecated in a future version. New code should use `get_pairwise_distances` instead', FutureWarning)
 
+=======
+    """
+>>>>>>> Stashed changes
     rdf_atoms = {}
     for i, site in enumerate(prim_cell_list):
         rdf_atoms[i] = []
         site1 = structure[site].species_string
         for pair_site in structure.get_neighbors(site=structure[site], r=max_dist):
             site2 = pair_site[0].species_string
-            rdf_atoms[i].append([round(pair_site[1],3), site1, site2])
+            rdf_atoms[i].append([round(pair_site[1], 3), site1, site2])
         rdf_atoms[i].sort()
     return rdf_atoms
 
 
+<<<<<<< Updated upstream
 def rdf_histo(rdf_atoms, max_dist=10, bin_width=0.1):
     '''
+=======
+def rdf_histo(rdf_atoms, max_dist=10, bin_size=0.1):
+    """
+>>>>>>> Stashed changes
     Convert the raw rdf with atoms to binned frequencies i.e. histogram.
 
     Args:
@@ -496,27 +505,34 @@ def rdf_histo(rdf_atoms, max_dist=10, bin_width=0.1):
         bin_width: bin size for generating counts
     Return:
         Binned rdf frequencies for each shell of neasest neighbor
+<<<<<<< Updated upstream
     '''
 
     warnings.warn('`rdf_histo` will be deprecated in a future version. New code should use `calculate_rdf` instead.', FutureWarning)
 
+=======
+    """
+>>>>>>> Stashed changes
     # get the longest rdf number
-    rdf_count = [ len(x) for x in rdf_atoms.values() ]
+    rdf_count = [len(x) for x in rdf_atoms.values()]
     rdf_len = np.array(rdf_count).max()
 
     # converse the rdf_atom into rdf in each shell, and only keep the distance values
     # e.g. rdf_nn_shell[0] contain all the pair distance of the first NN
     rdf_nn_shells = []
     for x in range(rdf_len):
-         rdf_nn_shells.append( [line[x][0] 
-                            for line in rdf_atoms.values() 
-                            if len(line) > x] )
+        rdf_nn_shells.append(
+            [line[x][0] for line in rdf_atoms.values() if len(line) > x]
+        )
 
+<<<<<<< Updated upstream
     bins = np.linspace(start=0, stop=max_dist, num=int(max_dist/bin_width)+1)
+=======
+    bins = np.linspace(start=0, stop=max_dist, num=int(max_dist / bin_size) + 1)
+>>>>>>> Stashed changes
     # np.histogram also return the bin edge, which is not needed
-    # so only the bin counts [0] is kept    
-    rdf_bin = [ np.histogram(x, bins=bins, density=False)[0]
-                for x in rdf_nn_shells ]
+    # so only the bin counts [0] is kept
+    rdf_bin = [np.histogram(x, bins=bins, density=False)[0] for x in rdf_nn_shells]
     return np.array(rdf_bin)
 
 def find_all_neighbours(structure_list,
@@ -527,6 +543,7 @@ def find_all_neighbours(structure_list,
     """
     Return neighbour lists for an iterable list of structures.
 
+<<<<<<< Updated upstream
     Parameters
     ----------
     
@@ -620,6 +637,10 @@ def find_all_neighbours(structure_list,
 
 def rdf_stack_histo(rdf_atoms, structure, max_dist=10, bin_width=0.1, bond_direct=False):
     '''
+=======
+def rdf_stack_histo(rdf_atoms, structure, max_dist=10, bin_size=0.1, bond_direct=False):
+    """
+>>>>>>> Stashed changes
     Convert the raw rdf with atoms to binned frequencies i.e. histogram
     and condsidering different atomic pairs
 
@@ -632,18 +653,16 @@ def rdf_stack_histo(rdf_atoms, structure, max_dist=10, bin_width=0.1, bond_direc
     Return:
         Binned rdf frequencies for each shell of nearest neighbor
         and a string of ordered atomic pairs
-    '''
+    """
     # get the longest rdf number
-    rdf_count = [ len(x) for x in rdf_atoms.values() ]
+    rdf_count = [len(x) for x in rdf_atoms.values()]
     rdf_len = np.array(rdf_count).max()
 
     # converse the rdf_atom into rdf in each shell,
     # i.e. rdf_nn_shell[0] contain all the pair distance of the first NN
     rdf_nn_shells = []
     for x in range(rdf_len):
-         rdf_nn_shells.append([ line[x] 
-                            for line in rdf_atoms.values() 
-                            if len(line) > x ])
+        rdf_nn_shells.append([line[x] for line in rdf_atoms.values() if len(line) > x])
 
     # breakdown each rdf_shell to atom pair dependent
     rdf_atom_pair_shells = []
@@ -652,29 +671,43 @@ def rdf_stack_histo(rdf_atoms, structure, max_dist=10, bin_width=0.1, bond_direc
         atom_pair_list = list(itertools.product(structure.symbol_set, repeat=2))
         for rdf_shell in rdf_nn_shells:
             for atom_pair in atom_pair_list:
-                rdf_atom_pair_shells.append([ x[0]
-                                            for x in rdf_shell
-                                            if x[1:] == list(atom_pair) ])
+                rdf_atom_pair_shells.append(
+                    [x[0] for x in rdf_shell if x[1:] == list(atom_pair)]
+                )
     else:
-        atom_pair_list = list(itertools.combinations(structure.symbol_set, r=2)) \
-                        + [ (a,a) for a in structure.symbol_set ]
+        atom_pair_list = list(itertools.combinations(structure.symbol_set, r=2)) + [
+            (a, a) for a in structure.symbol_set
+        ]
         for rdf_shell in rdf_nn_shells:
             for atom_pair in atom_pair_list:
-                rdf_atom_pair_shells.append([ x[0]
-                                            for x in rdf_shell
-                                            if (x[1:] == list(atom_pair) or 
-                                                x[1:][::-1] == list(atom_pair)) ])    
+                rdf_atom_pair_shells.append(
+                    [
+                        x[0]
+                        for x in rdf_shell
+                        if (x[1:] == list(atom_pair) or x[1:][::-1] == list(atom_pair))
+                    ]
+                )
 
+<<<<<<< Updated upstream
     bins = np.linspace(start=0, stop=max_dist, num=int(max_dist/bin_width)+1)
+=======
+    bins = np.linspace(start=0, stop=max_dist, num=int(max_dist / bin_size) + 1)
+>>>>>>> Stashed changes
     # np.histogram also return the bin edge, which is not needed
-    # so only the bin counts [0] is kept    
-    rdf_bin = [ np.histogram(x, bins=bins, density=False)[0]
-                for x in rdf_atom_pair_shells ]
+    # so only the bin counts [0] is kept
+    rdf_bin = [
+        np.histogram(x, bins=bins, density=False)[0] for x in rdf_atom_pair_shells
+    ]
     return np.array(rdf_bin), atom_pair_list
 
 
+<<<<<<< Updated upstream
 def rdf_kde(rdf_atoms, max_dist=10, bin_width=0.1, bandwidth=0.1):
     '''
+=======
+def rdf_kde(rdf_atoms, max_dist=10, bin_size=0.1, bandwidth=0.1):
+    """
+>>>>>>> Stashed changes
     Convert the raw rdf with atoms to binned frequencies with Gaussian smearing.
 
     Args:
@@ -683,12 +716,16 @@ def rdf_kde(rdf_atoms, max_dist=10, bin_width=0.1, bandwidth=0.1):
         bin_width: bin size for generating counts
     Return:
         rdf_bin: Gaussian smeared rdf frequencies for each shell of neasest neighbor
+<<<<<<< Updated upstream
     '''
 
     warnings.warn('`rdf_kde` will be deprecated in a future version. New code should use `calculate_rdf` instead.', FutureWarning)
 
+=======
+    """
+>>>>>>> Stashed changes
     # get the longest rdf number
-    rdf_count = [ len(x) for x in rdf_atoms.values() ]
+    rdf_count = [len(x) for x in rdf_atoms.values()]
     rdf_len = np.array(rdf_count).max()
 
     # converse the rdf_atom into rdf in each shell,
@@ -696,15 +733,21 @@ def rdf_kde(rdf_atoms, max_dist=10, bin_width=0.1, bandwidth=0.1):
     # e.g. rdf_nn_shell[0] contain all the pair distance of the first NN
     rdf_nn_shells = []
     for x in range(rdf_len):
-         rdf_nn_shells.append( [line[x][0]
-                            for line in rdf_atoms.values() 
-                            if len(line) > x] )
+        rdf_nn_shells.append(
+            [line[x][0] for line in rdf_atoms.values() if len(line) > x]
+        )
 
     # the kernel density method need a 2d input, so add a new axis
+<<<<<<< Updated upstream
     bins = np.linspace(start=0, stop=max_dist, num=int(max_dist/bin_width)+1)[:, np.newaxis]
+=======
+    bins = np.linspace(start=0, stop=max_dist, num=int(max_dist / bin_size) + 1)[
+        :, np.newaxis
+    ]
+>>>>>>> Stashed changes
 
     rdf_bin = []
-    kde = KernelDensity(kernel='gaussian', bandwidth=bandwidth)
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth)
     for x in rdf_nn_shells:
         log_dens = kde.fit(np.array(x)[:, np.newaxis]).score_samples(bins)
         # Due to Gaussian smearing hitting the edge of the RDF range,
@@ -717,6 +760,7 @@ def rdf_kde(rdf_atoms, max_dist=10, bin_width=0.1, bandwidth=0.1):
     return np.array(rdf_bin)
 
 
+<<<<<<< Updated upstream
 # def shell_similarity(rdf_bin):
 #     '''
 #     Calculate the earth mover distance (EMD) between adjacent rdf shells  
@@ -758,6 +802,65 @@ def rdf_kde(rdf_atoms, max_dist=10, bin_width=0.1, bandwidth=0.1):
 #                         help='Cutoff distance of the RDF')
 #     parser.add_argument('--trim', type=int, default=30,
 #                         help='the number of shells for RDF, 0 means no trim')
+=======
+def shell_similarity(rdf_bin):
+    """
+    Calculate the earth mover distance (EMD) between adjacent rdf shells
+    i.e. the first value is the EMD between the first shell and second
+
+    Args:
+        rdf_bin: calculated rdf, only rdf from function rdf_histo has been tested
+    Return:
+        np array of the similarity, with length (len(rdf_bin)-1)
+    """
+    shell_dist = np.zeros((len(rdf_bin), len(rdf_bin)))
+    dist_matrix = np.ones((len(rdf_bin[0]), len(rdf_bin[0])))
+    np.fill_diagonal(dist_matrix, 0)
+    for i, r1 in enumerate(rdf_bin):
+        for j, r2 in enumerate(rdf_bin):
+            if i < j:
+                dissim = emd(
+                    r1.astype("float64"),
+                    r2.astype("float64"),
+                    dist_matrix.astype("float64"),
+                )
+                shell_dist[i, j] = dissim
+                shell_dist[j, i] = dissim
+    return shell_dist
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Calculate RDF with atoms",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument(
+        "--input_file",
+        type=str,
+        default=None,
+        help="Input CIF containing the crystal structure",
+    )
+    parser.add_argument(
+        "--task",
+        type=str,
+        default="shell_similarity",
+        help="what to be calculated: \n"
+        + "   rdf: calculate RDF \n"
+        + "   stack_rdf: RDF with different atomic pair \n"
+        + "   shell_similarity: the similarity between two nearest shell \n"
+        + "   raw_rdf: origin 1D RDF as sorted list",
+    )
+    parser.add_argument("--output", type=str, default=None, help="Output RDF")
+    parser.add_argument(
+        "--max_dist", type=float, default=10.0, help="Cutoff distance of the RDF"
+    )
+    parser.add_argument(
+        "--trim",
+        type=int,
+        default=30,
+        help="the number of shells for RDF, 0 means no trim",
+    )
+>>>>>>> Stashed changes
 
 #     args = parser.parse_args()
 #     input_file = args.input_file
@@ -766,6 +869,7 @@ def rdf_kde(rdf_atoms, max_dist=10, bin_width=0.1, bandwidth=0.1):
 #     max_dist = args.max_dist
 #     trim = args.trim
 
+<<<<<<< Updated upstream
 #     np.set_printoptions(threshold=sys.maxsize) # print the whole array
 
 #     if input_file:
@@ -815,4 +919,61 @@ def rdf_kde(rdf_atoms, max_dist=10, bin_width=0.1, bandwidth=0.1):
 #         raw_rdf = get_raw_rdf(structure=struct, prim_cell_list=prim_cell_list, max_dist=max_dist)
 #     else:
 #         print('This task is not supported')
+=======
+    np.set_printoptions(threshold=sys.maxsize)  # print the whole array
 
+    if input_file:
+        # read a structure from cif to a pymatgen structure
+        struct = Structure.from_file(filename=input_file, primitive=True)
+    else:
+        # if a input structure is not provide, the code is in test mode
+        # and nacl structure will be used for test propose
+        nacl = Structure.from_spacegroup(
+            "Fm-3m", Lattice.cubic(5.6), ["Na", "Cl"], [[0.5, 0.5, 0.5], [0, 0, 0]]
+        )
+        struct = nacl.get_primitive_structure()
+
+    # The 'prim_cell_list' is used with the 'extend_structure' function, when the function
+    # is deprecated, this variable is kept maybe useful in the future
+    prim_cell_list = list(range(len(struct)))
+
+    if task == "rdf":
+        rdf_atoms = get_rdf_and_atoms(
+            structure=struct, prim_cell_list=prim_cell_list, max_dist=max_dist
+        )
+        rdf_bin = rdf_histo(rdf_atoms=rdf_atoms, max_dist=max_dist, bin_size=0.1)
+        if outfile:
+            np.savetxt(outfile, rdf_bin.transpose(), delimiter=" ", fmt="%i")
+
+    elif task == "stack_rdf":
+        rdf_atoms = get_rdf_and_atoms(
+            structure=struct, prim_cell_list=prim_cell_list, max_dist=max_dist
+        )
+        rdf_bin, atom_pairs = rdf_stack_histo(
+            rdf_atoms=rdf_atoms, structure=struct, max_dist=max_dist, bin_size=0.1
+        )
+        if outfile:
+            print(atom_pairs)
+            # transpose the ndarray for import into the plot program
+            np.savetxt(outfile, rdf_bin.transpose(), delimiter=" ", fmt="%i")
+
+    elif task == "shell_similarity":
+        rdf_atoms = get_rdf_and_atoms(
+            structure=struct, prim_cell_list=prim_cell_list, max_dist=max_dist
+        )
+        rdf_bin = rdf_histo(rdf_atoms=rdf_atoms, max_dist=max_dist, bin_size=0.1)
+        if trim != 0:
+            rdf_bin = rdf_bin[:trim]
+
+        shell_simi = shell_similarity(rdf_bin)
+        print(shell_simi)
+        if outfile:
+            np.savetxt(outfile, shell_simi, delimiter=" ", fmt="%.3f")
+>>>>>>> Stashed changes
+
+    elif task == "raw_rdf":
+        raw_rdf = get_raw_rdf(
+            structure=extend_stru, prim_cell_list=prim_cell_list, max_dist=max_dist
+        )
+    else:
+        print("This task is not supported")
